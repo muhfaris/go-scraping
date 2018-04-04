@@ -23,10 +23,10 @@ type Customer struct {
 }
 
 type Item struct {
-	Id       int
-	Name     string
-	Value    float64
-	Avaiable bool
+	Id        int
+	Name      string
+	Value     float64
+	Available bool
 }
 
 type Order struct {
@@ -36,7 +36,7 @@ type Order struct {
 }
 
 func (order *Order) Add(item Item) error {
-	if !item.Avaiable {
+	if !item.Available {
 		return errors.New("cannot add unavailable items to order")
 	}
 

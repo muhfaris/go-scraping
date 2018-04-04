@@ -28,16 +28,16 @@ type Logger interface {
 }
 
 type OrderInteractor struct {
-	UserRepository UserRepository
-	OrderReposiory domain.OrderReposiory
-	ItemRepository domain.ItemRepository
-	Logger         Logger
+	UserRepository  UserRepository
+	OrderRepository domain.OrderReposiory
+	ItemRepository  domain.ItemRepository
+	Logger          Logger
 }
 
 func (interactor *OrderInteractor) Items(userId, orderId int) ([]Item, error) {
 	var items []Item
 	user := interactor.UserRepository.FindById(userId)
-	order := interactor.OrderReposiory.FindById(orderId)
+	order := interactor.OrderRepository.FindById(orderId)
 
 	if user.Customer.Id != order.Customer.Id {
 		message := "User #%i(Customer #%i)"
@@ -63,7 +63,7 @@ func (interactor *OrderInteractor) Items(userId, orderId int) ([]Item, error) {
 func (interactor *OrderInteractor) Add(userId, orderId, itemId int) error {
 	var message string
 	user := interactor.UserRepository.FindById(userId)
-	order := interactor.OrderReposiory.FindById(orderId)
+	order := interactor.OrderRepository.FindById(orderId)
 
 	if user.Customer.Id != order.Customer.Id {
 		message = "User #%i (customer #%i)"
@@ -94,7 +94,7 @@ func (interactor *OrderInteractor) Add(userId, orderId, itemId int) error {
 		interactor.Logger.Log(err.Error())
 		return err
 	}
-	interactor.OrderReposiory.Store(order)
+	interactor.OrderRepository.Store(order)
 	interactor.Logger.Log(fmt.Sprintf(
 		"User added item '%s' (#%d) to order #%d",
 		item.Name, item.Id, order.Id))
@@ -108,7 +108,7 @@ type AdminOrderInteractor struct {
 func (interactor *AdminOrderInteractor) Add(userId, orderId, itemId int) error {
 	var message string
 	user := interactor.UserRepository.FindById(userId)
-	order := interactor.OrderReposiory.FindById(orderId)
+	order := interactor.OrderRepository.FindById(orderId)
 	if !user.IsAdmin {
 		message = "User #%i (customer #%i)"
 		message += "is not allowed to add items"
@@ -139,7 +139,7 @@ func (interactor *AdminOrderInteractor) Add(userId, orderId, itemId int) error {
 		interactor.Logger.Log(err.Error())
 		return err
 	}
-	interactor.OrderReposiory.Store(order)
+	interactor.OrderRepository.Store(order)
 	interactor.Logger.Log(fmt.Sprintf(
 		"admin added item '%s' (#%d) to order #%d",
 		item.Name, item.Id, order.Id))
